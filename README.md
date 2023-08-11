@@ -313,7 +313,7 @@ createChat: Crea un nuevo chat entre dos usuarios.
 findUserChats: Encuentra todos los chats en los que un usuario específico es miembro.
 findChat: Encuentra un chat específico entre dos usuarios.
 
-
+```
 const createChat = async (req, res) => { 
     const { firstId, secondId } = req.body;
 
@@ -367,7 +367,7 @@ const findChat = async (req, res) => {
 };
 
 module.exports = {createChat, findUserChats, findChat};
-
+```
 ### 5.1 Principio de Abierto/Cerrado (OCP):
 Cada función tiene una funcionalidad bien definida y no parece requerir modificaciones directas si se agregan nuevas funcionalidades relacionadas con la gestión de usuarios.
 createToken(_id): Esta función toma un _id y genera un token JWT. Si en el futuro deseas agregar más información al token o modificar cómo se crea el token, puedes hacerlo en esta función sin cambiar el código que la utiliza.
@@ -379,7 +379,7 @@ loginUser(req, res): Esta función maneja la autenticación de un usuario. Si de
 findUser(req, res): Esta función busca un usuario por su ID. Si en el futuro necesitas agregar más criterios de búsqueda o realizar operaciones adicionales en la búsqueda, puedes hacerlo aquí sin impactar otras partes del código.
 
 getUsers(req, res): Esta función obtiene una lista de usuarios. Si deseas agregar paginación, filtros u otros métodos de obtención de usuarios, puedes hacerlo en esta función sin alterar las demás funciones.
-
+```
 const userModel = require("../Models/userModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
@@ -471,7 +471,7 @@ const getUsers = async(req, res) => {
 }
 
 module.exports = {registerUser, loginUser, findUser, getUsers};
-
+```
 Trello: https://trello.com/b/pvwoTADC/social-c-is-i
 
 
