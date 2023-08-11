@@ -474,6 +474,7 @@ module.exports = {registerUser, loginUser, findUser, getUsers};
 ```
 Trello: https://trello.com/b/pvwoTADC/social-c-is-i
 ![image](https://github.com/PrincceMH/Social-C_3/assets/104182996/6fc7efa4-37a7-4f9d-b86c-35c13868b697)
+![image](https://github.com/PrincceMH/Social-C_3/assets/104182996/fd46c1ec-d86d-4308-a296-bc6abd0a942d)
 
 
 
