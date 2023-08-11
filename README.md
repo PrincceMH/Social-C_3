@@ -239,10 +239,7 @@ export default Registro;
 ### 4.3. Cookbook
 
 Las funciones `createChat`, `findUserChats` y `findChat` pueden relacionarse con el estilo Cookbook en el sentido de que cada función aborda una tarea específica y bien definida. Cada función representa una "receta" para realizar una operación particular en la base de datos relacionados con los chats.
-Cada función tiene una responsabilidad específica:
-createChat: Crea un nuevo chat entre dos usuarios.
-findUserChats: Encuentra todos los chats en los que un usuario específico es miembro.
-findChat: Encuentra un chat específico entre dos usuarios.
+Cada función tiene una responsabilidad específica,createChat: Crea un nuevo chat entre dos usuarios,findUserChats: Encuentra todos los chats en los que un usuario específico es miembro,findChat: Encuentra un chat específico entre dos usuarios.
 
 
 ```jsx
