@@ -312,6 +312,9 @@ module.exports = {createChat, findUserChats, findChat};
 ### 5.1 Principio de Responsabilidad Única
 Cada función en este conjunto tiene una responsabilidad específica: createChat para crear un nuevo chat, findUserChats para buscar chats de un usuario y findChat para buscar un chat específico entre dos usuarios. Cumplen con este principio al abordar una sola tarea cada una.
 const chatModel = require("../Models/chatModel");
+createChat: Crea un nuevo chat entre dos usuarios.
+findUserChats: Encuentra todos los chats en los que un usuario específico es miembro.
+findChat: Encuentra un chat específico entre dos usuarios.
 
 // createChat
 // findUserChats
