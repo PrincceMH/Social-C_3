@@ -473,6 +473,7 @@ const getUsers = async(req, res) => {
 module.exports = {registerUser, loginUser, findUser, getUsers};
 ```
 Trello: https://trello.com/b/pvwoTADC/social-c-is-i
+![image](https://github.com/PrincceMH/Social-C_3/assets/104182996/6fc7efa4-37a7-4f9d-b86c-35c13868b697)
 
 
 
