@@ -239,6 +239,10 @@ export default Registro;
 ### 4.3. Cookbook
 
 Las funciones `createChat`, `findUserChats` y `findChat` pueden relacionarse con el estilo Cookbook en el sentido de que cada función aborda una tarea específica y bien definida. Cada función representa una "receta" para realizar una operación particular en la base de datos relacionados con los chats.
+Cada función tiene una responsabilidad específica:
+createChat: Crea un nuevo chat entre dos usuarios.
+findUserChats: Encuentra todos los chats en los que un usuario específico es miembro.
+findChat: Encuentra un chat específico entre dos usuarios.
 
 
 ```jsx
@@ -306,158 +310,177 @@ module.exports = {createChat, findUserChats, findChat};
 
 # 5. Principios SOLID
 ### 5.1 Principio de Responsabilidad Única
-La función `postRequest` tiene una sola responsabilidad, que es manejar solicitudes HTTP POST y manejar las respuestas asociadas.
+Cada función en este conjunto tiene una responsabilidad específica: createChat para crear un nuevo chat, findUserChats para buscar chats de un usuario y findChat para buscar un chat específico entre dos usuarios. Cumplen con este principio al abordar una sola tarea cada una.
+const chatModel = require("../Models/chatModel");
 
-```jsx
-export const baseUrl = "http://localhost:5000/api"; 
+// createChat
+// findUserChats
+// findChat
 
-export const postRequest = async(url, body) => {
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json",
-        },
-        body, 
+const createChat = async (req, res) => { 
+    const { firstId, secondId } = req.body;
+
+    try {
+        const chat = await chatModel.findOne({ 
+            members: { $all: [firstId, secondId] },
+        });
+
+        if (chat) return res.status (200).json(chat);
+
+        const newChat = new chatModel({ 
+            members: [firstId, secondId]
+        })
+
+        const response = await newChat.save();
+
+        res.status(200).json(response);
+    } catch (error) { 
+        console.log(error);
+        res.status(500).json(error);
+    }
+};
+
+const findUserChats = async (req, res) => { 
+    const userId = req.params.userId;
+
+    try {
+        const chats = await chatModel.find({ 
+            members: { $in: [userId] },
     });
 
-    const data = await response.json();
-
-    if(!response.ok){
-        let message;
-
-        if(data?.message){
-            message = data.message;
-        }else{
-            message = data;
-        }
-
-        return {error: true, message};
+    res.status(200).json(chats);
+    } catch (error) { 
+        console.log(error); 
+        res.status(500).json(error);
     }
-
-    return data;
 };
-```
+
+const findChat = async (req, res) => {
+    const {firstId, secondId} = req.params;
+    try {
+        const chat = await chatModel.findOne({
+        members: { $all: [firstId, secondId] },
+    });
+
+    res.status(200).json(chat);    
+    } catch (error) { 
+        console.log(error);
+        res.status(500).json(error); I
+    }
+};
+
+module.exports = {createChat, findUserChats, findChat};
 
 
 ### 5.2 Principio de Inversión de Dependencia (DIP):
 El componente `AutorContextProvider` aplica el principio DIP al depender de abstracciones en lugar de detalles concretos. Utiliza el contexto proporcionado por React (`createContext`), y se comunica con las funciones de servicio (`postRequest`) a través de una interfaz abstracta.
 
 ### 5.3 Principio de Abierto/Cerrado (OCP):
-El diseño del componente AutorContextProvider es modular y extensible. Puede agregar más funciones o características en el futuro sin necesidad de modificar el código existente en gran medida.
+Cada función tiene una funcionalidad bien definida y no parece requerir modificaciones directas si se agregan nuevas funcionalidades relacionadas con la gestión de usuarios.
+createToken(_id): Esta función toma un _id y genera un token JWT. Si en el futuro deseas agregar más información al token o modificar cómo se crea el token, puedes hacerlo en esta función sin cambiar el código que la utiliza.
 
-```jsx
-import {useCallback, useEffect} from "react";
-import {createContext, useState} from "react";
-import {baseUrl, postRequest} from "../utils/services";
+registerUser(req, res): Esta función maneja el registro de un nuevo usuario. Si deseas agregar validaciones adicionales, procesos de autorización o algún otro comportamiento relacionado con el registro, puedes hacerlo en esta función sin afectar las otras partes del código.
 
-export const AutorContext = createContext();
+loginUser(req, res): Esta función maneja la autenticación de un usuario. Si deseas agregar funcionalidades de autenticación como el uso de tokens de acceso, políticas de seguridad adicionales u otros métodos de autenticación, puedes hacerlo en esta función sin modificar el resto del código.
 
-export const AutorContextProvider = ({children}) => {
-    const [user, setUser] = useState(null);
-    const [registerError, setRegisterError] = useState(null);
-    const [isRegisterLoading, setIsRegisterLoading] = useState(false);
-    const [registerInfo, setRegisterInfo] = useState({
-        name: "",
-        email: "",
-        password: "",
-    });
-    const [loginError, setLoginError] = useState(null);
-    const [isLoginLoading, setIsLoginLoading] = useState(false);
-    const [loginInfo, setLoginInfo] = useState({
-        email: "",
-        password: "",
-    });
+findUser(req, res): Esta función busca un usuario por su ID. Si en el futuro necesitas agregar más criterios de búsqueda o realizar operaciones adicionales en la búsqueda, puedes hacerlo aquí sin impactar otras partes del código.
 
-    console.log("User", user);
-    console.log("loginInfo", loginInfo);
+getUsers(req, res): Esta función obtiene una lista de usuarios. Si deseas agregar paginación, filtros u otros métodos de obtención de usuarios, puedes hacerlo en esta función sin alterar las demás funciones.
 
-    useEffect(()=>{
-        const user = localStorage.getItem("User");
+const userModel = require("../Models/userModel");
+const bcrypt = require("bcrypt");
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
 
-        setUser(JSON.parse(user));
-    }, [])
+const createToken = (_id) => {
+    const jwtkey = process.env.JWT_SECRET_KEY;
 
-    const updateRegisterInfo = useCallback((info) => {
-        setRegisterInfo(info);
-    }, []);
-
-    const updateLoginInfo = useCallback((info) => {
-        setLoginInfo(info);
-    }, []);
-
-    
-
-    const registerUser = useCallback(async(e) => {
-        e.preventDefault();
-
-        setIsRegisterLoading(true)
-        setRegisterError(null)
-
-        const response = await postRequest(
-            `${baseUrl}/users/register`,
-            JSON.stringify(registerInfo)
-        );
-
-        setIsRegisterLoading(false);
-
-        if(response.error){
-            return setRegisterError(response);
-        }
-
-        localStorage.setItem("User", JSON.stringify(response));
-        setUser(response);
-    },
-    [registerInfo]
-    );
-
-    const loginUser = useCallback(
-        async (e) => {
-
-        e.preventDefault();
-        setIsLoginLoading(true);
-        setLoginError(null);
-        const response = await postRequest(
-            `${baseUrl}/users/login`,
-            JSON.stringify(loginInfo)
-        );
-        setIsLoginLoading(false);
-        if (response.error) {
-            return setLoginError(response);
-        }
-        localStorage.setItem("User", JSON.stringify(response));
-        setUser(response);
-    }, 
-    [loginInfo]);
-    
-    const logoutUser = useCallback(() => {
-        localStorage.removeItem("User");
-        setUser(null);
-    }, [])
-
-    return(
-        <AutorContext.Provider
-            value={{
-                user,
-                registerInfo,
-                updateRegisterInfo,
-                registerUser,
-                registerError,
-                isRegisterLoading,
-                logoutUser,
-                loginUser,
-                loginError,
-                loginInfo, 
-                updateLoginInfo,
-                isLoginLoading,
-            }}
-        >
-            {children}
-        </AutorContext.Provider>
-    );
+    return jwt.sign({_id}, jwtkey, {expiresIn: "3d"});
 };
-```
+
+const registerUser = async (req, res) => {
+    try{
+        const {name, email, password} = req.body
+
+        let user = await userModel.findOne({email});
+
+        if(user) 
+            return res.status(400).json("Este email ya está en uso...");
+
+        if(!name || !email || !password) 
+            return res.status(400).json("Todos los campos son obligatorios...");
+
+        if(!validator.isEmail(email)) 
+            return res.status(400).json("El email debe ser válido...");
+
+        if(!validator.isStrongPassword(password))
+            return res.status(400).json("La constraseña debe ser segura...");
+
+        user = new userModel({name, email, password});
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password, salt);
+
+        await user.save();
+
+        const token = createToken(user._id);
+
+        res.status(200).json({_id: user._id, name, email, token})
+    }catch(error){
+        console.log(error)
+        res.status(500).json(error);
+    }
+};
+
+const loginUser = async (req, res) => {
+    const {email, password} = req.body;
+
+    try{
+        let user = await userModel.findOne({email});
+
+        if(!user) return res.status(400).json("Email o contrasena invalidos...");
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+
+        if(!isValidPassword) 
+            return res.status(400).json("Email o contrasena invalidos...");
+        
+        const token = createToken(user._id);
+
+        res.status(200).json({_id: user._id, name: user.name, email, token})
+    }catch(error){
+        console.log(error)
+        res.status(500).json(error);
+    }
+};
+
+const findUser = async(req, res) => {
+    const userId = req.params.userId;
+    try{
+        const user = await userModel.findById(userId);
+
+        res.status(200).json(user);
+    }catch(error){
+        console.log(error)
+        res.status(500).json(error);
+    }
+};
+
+const getUsers = async(req, res) => {
+    try{
+        const user = await userModel.find();
+
+        res.status(200).json(user);
+    }catch(error){
+        console.log(error)
+        res.status(500).json(error);
+    }
+}
+
+module.exports = {registerUser, loginUser, findUser, getUsers};
 
 Trello: https://trello.com/b/pvwoTADC/social-c-is-i
+
 
 
 
