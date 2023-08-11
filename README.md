@@ -368,11 +368,7 @@ const findChat = async (req, res) => {
 
 module.exports = {createChat, findUserChats, findChat};
 
-
-### 5.2 Principio de Inversión de Dependencia (DIP):
-El componente `AutorContextProvider` aplica el principio DIP al depender de abstracciones en lugar de detalles concretos. Utiliza el contexto proporcionado por React (`createContext`), y se comunica con las funciones de servicio (`postRequest`) a través de una interfaz abstracta.
-
-### 5.3 Principio de Abierto/Cerrado (OCP):
+### 5.1 Principio de Abierto/Cerrado (OCP):
 Cada función tiene una funcionalidad bien definida y no parece requerir modificaciones directas si se agregan nuevas funcionalidades relacionadas con la gestión de usuarios.
 createToken(_id): Esta función toma un _id y genera un token JWT. Si en el futuro deseas agregar más información al token o modificar cómo se crea el token, puedes hacerlo en esta función sin cambiar el código que la utiliza.
 
