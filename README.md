@@ -313,7 +313,7 @@ createChat: Crea un nuevo chat entre dos usuarios.
 findUserChats: Encuentra todos los chats en los que un usuario específico es miembro.
 findChat: Encuentra un chat específico entre dos usuarios.
 
-```
+```jsx
 const createChat = async (req, res) => { 
     const { firstId, secondId } = req.body;
 
@@ -379,7 +379,7 @@ loginUser(req, res): Esta función maneja la autenticación de un usuario. Si de
 findUser(req, res): Esta función busca un usuario por su ID. Si en el futuro necesitas agregar más criterios de búsqueda o realizar operaciones adicionales en la búsqueda, puedes hacerlo aquí sin impactar otras partes del código.
 
 getUsers(req, res): Esta función obtiene una lista de usuarios. Si deseas agregar paginación, filtros u otros métodos de obtención de usuarios, puedes hacerlo en esta función sin alterar las demás funciones.
-```
+```jsx
 const userModel = require("../Models/userModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
