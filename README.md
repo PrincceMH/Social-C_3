@@ -313,9 +313,6 @@ createChat: Crea un nuevo chat entre dos usuarios.
 findUserChats: Encuentra todos los chats en los que un usuario específico es miembro.
 findChat: Encuentra un chat específico entre dos usuarios.
 
-// createChat
-// findUserChats
-// findChat
 
 const createChat = async (req, res) => { 
     const { firstId, secondId } = req.body;
